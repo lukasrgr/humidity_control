@@ -33,6 +33,12 @@ void activate_relay(uint8_t rel_num);
  */
 void deactivate_relay(uint8_t rel_num);
 
+/* 
+ * Check if a relay is active.
+ * 
+ * @param rel_num:  The relay number you want to check.
+ * @return: HIGH if active, LOW if not.
+ */
 int get_relay_status(uint8_t rel_num);
 
 /* 

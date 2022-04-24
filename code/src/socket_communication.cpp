@@ -3,6 +3,8 @@
 #include <string.h>
 #include <stdbool.h>
 #include "ESP8266WiFi.h"
+#include "data_queue.h"
+
 
 /********************************** Defines **********************************/
 #define USER_SCKT_BUF_LEN 256
@@ -24,7 +26,8 @@ const uint16_t port = 65432;
 IPAddress ip_to_conn = IPAddress(192,168,178,29);
 
 // TODO Do not fix the size
-char json_template[JSON_MAX_LEN] = "{ \"timestamp\":%u, \"humidity\":%u, \"temperature\":%u }";
+char json_template[JSON_MAX_LEN] = "{ \"timestamp\":%u, \"humidity\":%u, "
+                                    "\"temperature\":%u , \"relay\":%u }";
 char json_loc[JSON_MAX_LEN];
 
 /**************************** Function definitions ****************************/
@@ -57,10 +60,16 @@ int dummy_client()
     return 0;
 }
 
+/* 
+ * Try to send one dht_data_t.
+ * TODO These delays seem to be unneccessary or massively overdimensioned. 
+ * 
+ * @return: Success status, 0 if sent.
+ */
 int send_one_dht_data(dht_data_t *dat)
 {
     snprintf(json_loc, JSON_MAX_LEN, json_template, dat->timestamp, 
-                dat->humidity, dat->temp);
+                dat->humidity, dat->temp, dat->relay_active);
     if (!tcp_client.connect(ip_to_conn, port))
     {
         Serial.println("Connection to host failed");
@@ -74,4 +83,45 @@ int send_one_dht_data(dht_data_t *dat)
     tcp_client.stop();
     delay(5000);
     return 0;
+}
+
+/* 
+ * Send data from the data_queue if available.
+ * Needs to be called in a loop.
+ * 
+ * @return: Success status.
+ */
+int send_dht_data_from_queue()
+{
+    static dht_data_t data_to_send = {0};
+
+    int status = 1;
+
+    // No data if timestamp = 0.
+    if (data_to_send.timestamp == 0)
+    {
+        if (elements_in_buf() > 0)
+        {
+            data_to_send = pop_data_element();
+#ifdef SEND_DEBUG
+            printf("Fetched new data to send: ");
+            printf("[%u, %i, %i, %i]\n\r", data_to_send.timestamp, data_to_send.humidity, 
+				data_to_send.temp, data_to_send.relay_active);
+#endif // SEND_DEBUG
+        }
+    }
+    else
+    {
+        status = send_one_dht_data(&data_to_send);
+        // Reset static variable if data has been successfully been sent.
+        if (status == 0)
+        {
+            memset(&data_to_send, 0, sizeof(data_to_send));
+#ifdef SEND_DEBUG
+            printf("Successfully transmitted data.\n\r");
+#endif // SEND_DEBUG
+        }
+    }
+
+    return status;
 }

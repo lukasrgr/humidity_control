@@ -110,11 +110,11 @@ void setup() {
   }
   */
 
-  //setup_user_comm();
+  setup_user_comm();
   //dummy_client();
 
   dht_data_t dummy_dat = {11, 2, 3, false};
-  //send_one_dht_data(&dummy_dat);
+  send_one_dht_data(&dummy_dat);
 }
 
 void loop() {
@@ -125,7 +125,7 @@ void loop() {
   time_t rawtime;
   time(&rawtime);
   
-  if (rawtime - 5 > last_data_time)
+  if (rawtime - DATA_TIME_OFFSET_UNIX > last_data_time)
   {
     dht_data_t new_dat = measure_until_data();
     new_dat.timestamp = (uint32_t)rawtime;
@@ -135,6 +135,7 @@ void loop() {
 
 #ifdef PRINTS_IN_MAIN
     printf("Aquired new hum %u, temp %u\n\r", new_dat.humidity, new_dat.temp);
+    printf("elements_in_buf() %i \n\r", elements_in_buf());
 #endif // PRINTS_IN_MAIN
 
     push_data_element(new_dat);
@@ -142,8 +143,7 @@ void loop() {
     last_data_time = rawtime;
   }
 
-  // TODO
-  //int dummy_client();
+  send_dht_data_from_queue();
 }
 
 dht_data_t measure_until_data()
