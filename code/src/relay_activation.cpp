@@ -62,6 +62,11 @@ void deactivate_relay(uint8_t rel_num)
     write_single_relay(rel_num, LOW);
 }
 
+int get_relay_status(uint8_t rel_num)
+{
+    return digitalRead(relay_pins[rel_num]);
+}
+
 /* 
  * Switch a single relay.
  * 

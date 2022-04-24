@@ -1,8 +1,12 @@
 /********************************** Includes **********************************/
 #include <Arduino.h>
 #include <stdbool.h>
+#include "time.h" // setenv(), do not worry about IDE warning, compiles fine
 #include "configuration.h"
 #include "relay_activation.h"
+#include "types_and_enums.h"
+#include "data_queue.h"
+#include "socket_communication.h"
 #include "dht_lib/DHT.h"
 #include "mysql_connector_lib/src/MySQL_Connection.h"
 #include "mysql_connector_lib/src/MySQL_Cursor.h"
@@ -22,6 +26,8 @@ const char pass[] = "SagIchDirNicht!";
 
 /***************************** Struct definitions *****************************/
 /**************************** Prototype functions *****************************/
+bool check_and_activate_relay(float hum, float temp);
+dht_data_t measure_until_data();
 void error_handler();
 
 
@@ -34,12 +40,12 @@ char user[] = "arduino_user";
 char password[] = "secret";
 
 WiFiClient client;
-MySQL_Connection conn(&client);
-MySQL_Cursor* cursor;
+//MySQL_Connection conn(&client);
+//MySQL_Cursor* cursor;
 
 // TODO Replace by modifiable template
-char INSERT_SQL[] = "INSERT INTO humidity.measuredData (timestamp, temperature, "
-                    "humidity) VALUES (1, 2, 6)";
+//char INSERT_SQL[] = "INSERT INTO humidity.measuredData (timestamp, temperature, "
+//                    "humidity) VALUES (1, 2, 6)";
 
 uint32_t last_executed = 0;
 // bc:ff:4d:19:fe:11
@@ -61,6 +67,14 @@ void setup() {
     error_handler();
   }
 
+  setup_data_queue();
+
+  /*
+   * This allows the correct timeoffset to be used for localtime().
+   * Do not worry about the IDE warning, the function is defined in a macro.
+   */
+  setenv("TZ", "CET-1CEST,M3.5.0,M10.5.0/3", 3);
+
   dht.begin();
 
   printf("hum %f temp %f\n\r", dht.readHumidity(), dht.readTemperature());
@@ -73,51 +87,97 @@ void setup() {
   }
   Serial.print(WiFi.macAddress());
   printf("Connected.\n\r");
-  printf("My IP address is: ");
+  Serial.println("My IP address is: ");
   Serial.println(WiFi.localIP());
-  printf("b\n\r");
+  printf("\n\r");
 
-  Serial.print("Connecting to SQL...  ");
+  /*Serial.print("Connecting to SQL...  ");
+  
   char default_db[] = "humidity";
   if (conn.connect(server_addr, 3306, user, password))
     Serial.println("OK.");
   else
     Serial.println("FAILED.");
-
+  */
   // create MySQL cursor object
-  cursor = new MySQL_Cursor(&conn);
+  //cursor = new MySQL_Cursor(&conn);
 
+  /*
   if (conn.connected())
   {
     printf("Connected and executing sql\n\r");
-    cursor->execute(INSERT_SQL);
+    //cursor->execute(INSERT_SQL);
   }
+  */
+
+  //setup_user_comm();
+  //dummy_client();
+
+  dht_data_t dummy_dat = {11, 2, 3, false};
+  //send_one_dht_data(&dummy_dat);
 }
 
 void loop() {
-  float humid = dht.readHumidity();
-  float temp = dht.readTemperature();
+  const uint32_t DATA_TIME_OFFSET_UNIX = SAMPLE_EVERY_MIN * 60;
+
+  static time_t last_data_time = 0;
+
+  time_t rawtime;
+  time(&rawtime);
   
-  if (!isnan(humid))
+  if (rawtime - 5 > last_data_time)
   {
-    if (humid >= ON_HUM_THRES) 
-    {
-      activate_relay(RELAY_NUM);
-    }
-    else if (humid <= OFF_HUM_THRES)
-    {
-      deactivate_relay(RELAY_NUM);
-    }
+    dht_data_t new_dat = measure_until_data();
+    new_dat.timestamp = (uint32_t)rawtime;
+
+    new_dat.relay_active = check_and_activate_relay(new_dat.humidity, 
+                                                    new_dat.temp);
+
+#ifdef PRINTS_IN_MAIN
+    printf("Aquired new hum %u, temp %u\n\r", new_dat.humidity, new_dat.temp);
+#endif // PRINTS_IN_MAIN
+
+    push_data_element(new_dat);
+
+    last_data_time = rawtime;
   }
 
-  if (millis() - last_executed > 5000)
+  // TODO
+  //int dummy_client();
+}
+
+dht_data_t measure_until_data()
+{
+  dht_data_t new_dat = {0};
+
+  float humid = 0;
+  float temp = 0;
+  bool data_valid = false;
+  while (!data_valid)
   {
-    if (conn.connected())
-    {
-      printf("Connected and executing sql\n\r");
-      cursor->execute(INSERT_SQL);
-    }
+    humid = dht.readHumidity();
+    temp = dht.readTemperature();
+
+    data_valid = !isnan(humid) && !isnan(temp);
   }
+
+  new_dat.humidity = (uint8_t)humid;
+  new_dat.temp = (uint8_t)temp;
+
+  return new_dat;
+}
+
+bool check_and_activate_relay(float hum, float temp)
+{
+  if (hum >= ON_HUM_THRES)
+  {
+    activate_relay(RELAY_NUM);
+  } 
+  else if (hum <= OFF_HUM_THRES)
+  {
+    deactivate_relay(RELAY_NUM);
+  }
+  return get_relay_status(RELAY_NUM);
 }
 
 /* 
@@ -125,6 +185,8 @@ void loop() {
  */
 void error_handler()
 {
+  printf("Error detected, halting.\n\r");
+  deactivate_relay(1);
   for(;;)
     yield();
 }

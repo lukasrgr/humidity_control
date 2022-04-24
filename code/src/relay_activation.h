@@ -33,6 +33,8 @@ void activate_relay(uint8_t rel_num);
  */
 void deactivate_relay(uint8_t rel_num);
 
+int get_relay_status(uint8_t rel_num);
+
 /* 
  * Turn on the first n relays.
  * 

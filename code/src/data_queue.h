@@ -5,9 +5,14 @@
 #ifndef _DATA_QUEUE_H_
 #define _DATA_QUEUE_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /********************************** Includes **********************************/
 #include <stdint.h>
 #include "configuration.h"
+#include "types_and_enums.h"
 
 
 /********************************* Constants *********************************/
@@ -16,29 +21,20 @@
 
 
 /***************************** Struct definitions *****************************/
-/* 
- * Try to keep this structure small to save space.
- * For this reason we do not use the default C tm struct.
- */
-typedef struct
-{
-    uint8_t hour;
-    uint8_t min;
-    uint8_t humidity;
-    uint8_t temp;
-} hum_data_t;
-
-
-
 /**************************** Variable definitions ****************************/
 /**************************** Prototype functions *****************************/
-int push_data_element(uint8_t hour, uint8_t min, 
-                        uint8_t humidity, uint8_t temp);
+int setup_data_queue();
 
-hum_data_t pop_data_element(uint8_t hour, uint8_t min, 
-                        uint8_t humidity, uint8_t temp);
+int push_data_element(dht_data_t dat);
 
-uint16_t num_entries();
+dht_data_t pop_data_element();
 
+uint16_t space_in_buf();
+
+uint16_t elements_in_buf();
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // _DATA_QUEUE_H_
