@@ -28,6 +28,7 @@ const char pass[] = "SagIchDirNicht!";
 /**************************** Prototype functions *****************************/
 bool check_and_activate_relay(float hum, float temp);
 dht_data_t measure_until_data();
+void wait_until_round_time();
 void error_handler();
 
 
@@ -113,8 +114,7 @@ void setup() {
   setup_user_comm();
   //dummy_client();
 
-  dht_data_t dummy_dat = {11, 2, 3, false};
-  send_one_dht_data(&dummy_dat);
+  wait_until_round_time();
 }
 
 void loop() {
@@ -146,6 +146,12 @@ void loop() {
   send_dht_data_from_queue();
 }
 
+/* 
+ * Keep measuring until data is valid.
+ * The dht lib returns 'nan' from time to time, so this function is needed.
+ * 
+ * @return: A dht_data_t element.
+ */
 dht_data_t measure_until_data()
 {
   dht_data_t new_dat = {0};
@@ -167,7 +173,15 @@ dht_data_t measure_until_data()
   return new_dat;
 }
 
-bool check_and_activate_relay(float hum, float temp)
+/* 
+ * Check if the humidity exceeds the desired threshold.
+ * If so activate the relay and thus the dehumidifyer.
+ * 
+ * @param hum:  The current humidity.
+ * @param temp: The current temperature.
+ * @return: Relay status.
+ */
+bool check_and_activate_relay(float hum, __attribute__((unused)) float temp)
 {
   if (hum >= ON_HUM_THRES)
   {
@@ -181,7 +195,26 @@ bool check_and_activate_relay(float hum, float temp)
 }
 
 /* 
+ * Wait until a multiple of 5 minutes is reached.
+ * 
+ * @return: None.
+ */
+void wait_until_round_time()
+{
+  time_t rawtime;
+  time(&rawtime);
+
+  while(rawtime % (5*60) != 0)
+  {
+    time(&rawtime);
+    yield();
+  }
+}
+
+/* 
  * Infinite loop if an error occurs.
+ * 
+ * @return: None.
  */
 void error_handler()
 {
