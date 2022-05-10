@@ -71,7 +71,7 @@ def waitingfordata():
                     data = conn.recv(1024)
                     if data != b'':
                         some = json.loads(data.decode("utf-8"))
-                        print(f"test")
+                        print(f"test", some)
                         if some['method'] == 'receiveData':
                             try:
                                 retrievedData = retrieveData("sampleData")
@@ -80,7 +80,8 @@ def waitingfordata():
                             except:
                                 print(error)
                             finally:
-                                s.send(bytes(object,encoding="utf-8"))
+                                #s.send(bytes(object,encoding="utf-8"))
+                                #s.sendto()
                                 dataReceived = True
                         elif some['method'] == 'sendData':
                             try:
