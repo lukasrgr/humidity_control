@@ -76,12 +76,12 @@ def waitingfordata():
                             try:
                                 retrievedData = retrieveData("sampleData")
                                 object = convertReceivedDataIntoObjectStructure(retrievedData)
+                                #s.send(object.encode())
                                 print(f"object ", object)
                             except:
                                 print(error)
                             finally:
-                                #s.send(bytes(object,encoding="utf-8"))
-                                #s.sendto()
+                                conn.sendall(object.encode())
                                 dataReceived = True
                         elif some['method'] == 'sendData':
                             try:

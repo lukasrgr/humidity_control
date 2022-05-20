@@ -19,7 +19,9 @@
     "@angular/platform-browser-dynamic": "~13.3.0",
     "@angular/router": "~13.3.0",
     "@ionic/angular": "latest",
+    "@types/chart.js": "^2.9.37",
     "chart.js": "^3.7.1",
+    "ng2-charts": "^3.0.11",
     "rxjs": "~7.5.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4"

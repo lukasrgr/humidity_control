@@ -1,4 +1,4 @@
-import { NgModule } from "@angular/core";
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from "@angular/core";
 import { ChartComponent } from "./chart";
 
 @NgModule({
@@ -7,6 +7,7 @@ import { ChartComponent } from "./chart";
     ],
     exports: [
         ChartComponent
-    ]
+    ],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class Chart { }
