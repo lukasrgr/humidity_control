@@ -6,15 +6,18 @@
 
 /********************************** Defines ***********************************/
 #define R1PIN D3
-#define R2PIN D4
+#define R2PIN D2
 #define R3PIN D5
 #define R4PIN D6
+
+#define RELAY_ACTIVE_LEVEL LOW
+#define RELAY_INACTIVE_LEVEL HIGH
 
 
 /********************************* Constants **********************************/
 /***************************** Struct definitions *****************************/
 /**************************** Prototype functions *****************************/
-void write_single_relay(uint8_t rel_num, uint8_t write_level);
+void write_single_relay(uint8_t rel_num, int write_level);
 int write_n_relays(uint8_t rel_num, int write_val);
 
 
@@ -41,6 +44,20 @@ uint8_t relay_pins[NUM_RELAYS] =
 
 /**************************** Function definitions ****************************/
 /* 
+ * Setup outputs. Turn off the relays.
+ * 
+ * @return: None.
+ */
+void setup_relays()
+{
+    for (uint16_t pin = 0; pin < NUM_RELAYS; pin++)
+    {
+        pinMode(relay_pins[pin], OUTPUT);
+        digitalWrite(relay_pins[pin], RELAY_INACTIVE_LEVEL);
+    }
+}
+
+/* 
  * Turn on a single relay.
  * 
  * @param rel_num:  The relay number you want to activate.
@@ -48,7 +65,7 @@ uint8_t relay_pins[NUM_RELAYS] =
  */
 void activate_relay(uint8_t rel_num)
 {
-    write_single_relay(rel_num, HIGH);
+    write_single_relay(rel_num, RELAY_ACTIVE_LEVEL);
 }
 
 /* 
@@ -59,7 +76,7 @@ void activate_relay(uint8_t rel_num)
  */
 void deactivate_relay(uint8_t rel_num)
 {
-    write_single_relay(rel_num, LOW);
+    write_single_relay(rel_num, RELAY_INACTIVE_LEVEL);
 }
 
 /* 
@@ -80,7 +97,7 @@ int get_relay_status(uint8_t rel_num)
  * @param write_level:  The logic lever to set.
  * @return: None.
  */
-void write_single_relay(uint8_t rel_num, uint8_t write_level)
+void write_single_relay(uint8_t rel_num, int write_level)
 {
     if (rel_num >= NUM_RELAYS)
         return;
@@ -96,7 +113,7 @@ void write_single_relay(uint8_t rel_num, uint8_t write_level)
  */
 int activate_n_relays(uint8_t rel_n)
 {
-    return write_n_relays(rel_n, HIGH);
+    return write_n_relays(rel_n, RELAY_ACTIVE_LEVEL);
 }
 
 /* 
@@ -107,7 +124,7 @@ int activate_n_relays(uint8_t rel_n)
  */
 int deactivate_n_relays(uint8_t rel_n)
 {
-    return write_n_relays(rel_n, LOW);
+    return write_n_relays(rel_n, RELAY_INACTIVE_LEVEL);
 }
 
 /* 
@@ -117,14 +134,37 @@ int deactivate_n_relays(uint8_t rel_n)
  * @param write_level:  The logic lever to set.
  * @return: Success status.
  */
-int write_n_relays(uint8_t rel_num, uint8_t write_level)
+int write_n_relays(uint8_t rel_num, int write_level)
+{
+    if (rel_num > NUM_RELAYS)
+        return 1;
+
+    for (uint16_t pin = 0; pin < rel_num; pin++)
+    {
+        digitalWrite(relay_pins[pin], write_level);
+    }
+
+    return 0;
+}
+
+/* 
+ * Activate the first n relays, deactivate the rest.
+ * 
+ * @param rel_num:  The number of relays to activate.
+ * @return: Success status.
+ */
+int activate_first_n_relays(uint8_t rel_num)
 {
     if (rel_num >= NUM_RELAYS)
         return 1;
 
     for (uint16_t pin = 0; pin < rel_num; pin++)
     {
-        digitalWrite(relay_pins[pin], write_level);
+        digitalWrite(relay_pins[pin], RELAY_ACTIVE_LEVEL);
+    }
+    for (uint16_t pin = rel_num; pin < NUM_RELAYS; pin++)
+    {
+        digitalWrite(relay_pins[pin], RELAY_INACTIVE_LEVEL);
     }
 
     return 0;

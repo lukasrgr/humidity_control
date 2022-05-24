@@ -13,9 +13,9 @@
 
 
 /********************************** Defines ***********************************/
-#define DHT_PIN D2
+#define DHT_PIN D4
 #define DHT_TYPE DHT11
-#define RELAY_NUM 1
+#define RELAY_NUM 2
 
 
 /********************************* Constants **********************************/ 
@@ -59,6 +59,8 @@ void setup() {
 
   printf("\n\rHello\n\r");
 
+  setup_relays();
+
   /* 
    * Check for possible errors.
    */
@@ -92,27 +94,7 @@ void setup() {
   Serial.println(WiFi.localIP());
   printf("\n\r");
 
-  /*Serial.print("Connecting to SQL...  ");
-  
-  char default_db[] = "humidity";
-  if (conn.connect(server_addr, 3306, user, password))
-    Serial.println("OK.");
-  else
-    Serial.println("FAILED.");
-  */
-  // create MySQL cursor object
-  //cursor = new MySQL_Cursor(&conn);
-
-  /*
-  if (conn.connected())
-  {
-    printf("Connected and executing sql\n\r");
-    //cursor->execute(INSERT_SQL);
-  }
-  */
-
   setup_user_comm();
-  //dummy_client();
 
   wait_until_round_time();
 }
@@ -120,12 +102,12 @@ void setup() {
 void loop() {
   const uint32_t DATA_TIME_OFFSET_UNIX = SAMPLE_EVERY_MIN * 60;
 
-  static time_t last_data_time = 0;
+  static time_t next_data_time = 0;
 
   time_t rawtime;
   time(&rawtime);
   
-  if (rawtime - DATA_TIME_OFFSET_UNIX > last_data_time)
+  if (rawtime >= next_data_time)
   {
     dht_data_t new_dat = measure_until_data();
     new_dat.timestamp = (uint32_t)rawtime;
@@ -140,7 +122,9 @@ void loop() {
 
     push_data_element(new_dat);
 
-    last_data_time = rawtime;
+    // Round to next value
+    next_data_time = DATA_TIME_OFFSET_UNIX * 
+        ((rawtime + DATA_TIME_OFFSET_UNIX) / DATA_TIME_OFFSET_UNIX);
   }
 
   send_dht_data_from_queue();
@@ -185,11 +169,11 @@ bool check_and_activate_relay(float hum, __attribute__((unused)) float temp)
 {
   if (hum >= ON_HUM_THRES)
   {
-    activate_relay(RELAY_NUM);
+    activate_first_n_relays(RELAY_NUM);
   } 
   else if (hum <= OFF_HUM_THRES)
   {
-    deactivate_relay(RELAY_NUM);
+    deactivate_n_relays(RELAY_NUM);
   }
   return get_relay_status(RELAY_NUM);
 }
@@ -219,7 +203,7 @@ void wait_until_round_time()
 void error_handler()
 {
   printf("Error detected, halting.\n\r");
-  deactivate_relay(1);
+  deactivate_n_relays(RELAY_NUM);
   for(;;)
     yield();
 }
