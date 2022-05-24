@@ -1,0 +1,40 @@
+<ion-card>
+    <ion-item lines="full" color="light">
+        <ion-label>Overview</ion-label>
+    </ion-item>
+    <ion-card-content>
+        <ion-row>
+            <ion-col style="width: 50%;">
+                Relay
+            </ion-col>
+            <ion-col style="text-align: right">
+                <ion-icon name="power" size="large"></ion-icon>
+            </ion-col>
+        </ion-row>
+        <ion-row>
+            <ion-col style="width: 50%;">
+                Temperature
+            </ion-col>
+            <ion-col style="text-align: right">
+                <!-- <canvas id="temperature" height="25" width="25"></canvas>-->
+                <svg width="400" height="210">
+                    <g stroke="red" fill="none" stroke-width="30" stroke-linecap="round">
+                        <path d="M 70 90 A 150 150 0 0 1 270 90" />
+                        <path d="M 100 125 A 105 105 0 0 1 240 125" />
+                        <path d="M 130 160 A 60 60 0 0 1 210 160" />
+                    </g>
+                </svg>
+            </ion-col>
+        </ion-row>
+        <ion-row>
+            <ion-col style="width: 50%;">
+                Humidity
+            </ion-col>
+            <ion-col style="text-align: right">
+                <!-- <canvas height="100" width="600"></canvas> -->
+            </ion-col>
+        </ion-row>
+    </ion-card-content>
+</ion-card>
+
+<!-- calendar-outline-->

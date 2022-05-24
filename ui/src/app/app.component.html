@@ -1,0 +1,27 @@
+<ion-app>
+  <ion-header>
+    <ion-toolbar color="primary" mode="md">
+      <!-- page title is shown if the current page isn't Live nor History -->
+      <ion-title slot="start">
+        Monitoring: Humidity and Temperature
+      </ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-grid style="width: 100%">
+    <ion-row class="ion-no-padding">
+      <ion-col size="3">
+        <dataOverview></dataOverview>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size="3">
+        <consumptionCalculation></consumptionCalculation>
+      </ion-col>
+      <ion-col size="8">
+        <chart></chart>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+</ion-app>

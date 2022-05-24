@@ -2,8 +2,8 @@ import socket
 import json
 
 HOST = "192.168.178.29"  # The server's hostname or IP address
-PORT = 65432  # The port used by the server
-m = {"method": "sendData", "timestamp":1649265197, "temperature": 20, "humidity": 50, "relay": 1}
+PORT = 65435  # The port used by the server
+m = {"method": "receiveData"}
 data = json.dumps(m)
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
