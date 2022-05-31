@@ -22,11 +22,12 @@ bool connected = false;
 char user_socket_buf[USER_SCKT_BUF_LEN] = {};
 bool user_data_available = false;
 
-const uint16_t port = 65435;
-IPAddress ip_to_conn = IPAddress(192,168,178,29);
+const uint16_t port = SERVER_PORT;
+IPAddress ip_to_conn = IPAddress(SERVER_IP);
 
 // TODO Do not fix the size
-char json_template[JSON_MAX_LEN] = "{ \"timestamp\":%u, \"humidity\":%u, "
+char json_template[JSON_MAX_LEN] = "{ \"method\":\"sendData\", "
+                                    "\"timestamp\":%u, \"humidity\":%u, "
                                     "\"temperature\":%u , \"relay\":%u }";
 char json_loc[JSON_MAX_LEN];
 

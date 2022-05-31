@@ -20,8 +20,8 @@
 
 /********************************* Constants **********************************/ 
 // Configure your ssid and password here
-const char ssid[] = "It hurts when IP";
-const char pass[] = "SagIchDirNicht!";
+const char ssid[] = YOUR_SSID;
+const char pass[] = YOUR_PASSWORD;
 
 
 /***************************** Struct definitions *****************************/
@@ -188,7 +188,7 @@ void wait_until_round_time()
   time_t rawtime;
   time(&rawtime);
 
-  while(rawtime % (5*60) != 0)
+  while(rawtime % ((SAMPLE_EVERY_MIN)*60) != 0)
   {
     time(&rawtime);
     yield();
