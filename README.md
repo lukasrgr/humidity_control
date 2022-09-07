@@ -48,6 +48,20 @@ To hold the relay board in place, you have to install the board and then melt th
 ![Installed hardware.](./pics/hum_control_open.jpg "Installed hardware.")
 
 ### Programming language and environment
+
+sequenceDiagram
+    Humidity-Sensor->>+Humidity-Sensor: readSensor(readHumidity(), readTemperature())
+    Humidity-Sensor->>+Backend: sendmeasuredData(timestamp, humidity, temperature, relay)
+    Backend->>+Database: insertDataInto(sampleData)
+    Database-->>-Backend: successfully Inserted
+    Humidity-Sensor->>+ Humidity-Sensor: relayStatusChanged()
+    Humidity-Sensor->>+Backend: sendRelayStatus(timestamp, relay)
+    Backend->>+Database: insertDataInto(relayData)
+    Database-->>-Backend: succesfully Inserted
+    Frontend->>+Backend: getData()
+    Backend->>+Database: SQLQuery()
+    Database->>-Backend: queryResult()
+    Backend->>-Frontend: formattedQueryResult()
 TODO Web stuff  
 TODO database  
 The code for the ESP8266 was mostly written using C++ and the Arduino libraries. This greatly simplified the implementation.  
