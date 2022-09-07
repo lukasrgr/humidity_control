@@ -53,7 +53,7 @@ To hold the relay board in place, you have to install the board and then melt th
 
 ### Programming language and environment
 
-| Component | Programming Language | Framework | Some 
+| Component | Programming Language | Framework | In Detail 
 | --- | ----------- | --------- | ------- |
 | Database | MySQL | |MariaDB
 | Backend | Python
