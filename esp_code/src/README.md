@@ -1,11 +1,7 @@
 # humidity_control
 
 ## Basics
-This project aims at regulating our bathrooms humidity by controlling a dehumidifyer. 
-The humidity, temperature, current timestamp and the dehumidifyer status is written into a database.
-Using an UI, the user can observe how these values change over time.
-![Rendering of the physical hardware](./pics/physical_mounting_rendering_1.PNG "Hardware rendering.")
-![Installed hardware.](./pics/ttttt.jpg "Installed hardware.")
+The ESP8266 measures the humidity, controls the dehumidifier and sends data to a TCP socket.
 
 
 ## Features
@@ -14,8 +10,6 @@ Using an UI, the user can observe how these values change over time.
 * Controlling the dehumidifyer
 * Transmitting data to the server, writing into the database
 * Saving data up to one day on the ESP, if the database is temporarily unavailable
-* Plotting the time series
-* 3D printable housing
 ### Possible future work
 * Changing the dehumidifier activation threshold using the UI
 ### Intentional limitations
@@ -23,8 +17,7 @@ Using an UI, the user can observe how these values change over time.
 
 
 ## Usage
-Enter your networks SSID and password in 'configuration.h'.
-Make sure the database and server are setup correctly. Adjust the server IP and port in 'configuration.h'.
+Enter your networks SSID and password in 'configuration.h'. You also have to enter you TCP sockets IP and port.
 
 
 ## Project structure
@@ -39,3 +32,4 @@ Here are some important files. To keep it brief, only the headers are listed:
 
 
 ## Implementation
+The mysql connector lib is used. Build using PlatformIO.
