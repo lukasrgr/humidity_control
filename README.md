@@ -3,9 +3,8 @@
 ## Basics
 This project aims at regulating our bathrooms humidity by controlling a dehumidifyer. 
 The humidity, temperature, current timestamp and the dehumidifyer status is written into a database.
-Using an UI, the user can observe how these values change over time.
+Using an UI, the user can observe how these values change over time.  
 ![Rendering of the physical hardware](./pics/case_rendering.PNG "Hardware rendering.")
-
 ![Installed hardware.](./pics/ttttt.jpg "Installed hardware.")
 
 
