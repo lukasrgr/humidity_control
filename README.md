@@ -33,8 +33,8 @@ Here are some directories that may contain interesting files. All of these conta
 * /3d_objects/: The printable case as STLs.
 * /esp_code/: The ESP8266 code measuring values and controlling the dehumidifier.
 * /tcpSocket/:
- - Python socket server, that handles incoming data from the ESP. Writes into a database.
- - Python socket server, that handles incoming requests from Frontend, executes a query in the database, formats the result and sends this back to frontend.
+    - Python socket server, that handles incoming data from the ESP. Writes into a database.
+    - Python socket server, that handles incoming requests from Frontend, executes a query in the database, formats the result and sends this back to frontend.
 * /ui/: The user interface.
 * /wiring/: A basic wiring diagram.
 * /pics/: Some images.
