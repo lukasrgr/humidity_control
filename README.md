@@ -5,6 +5,7 @@ This project aims at regulating our bathrooms humidity by controlling a dehumidi
 The humidity, temperature, current timestamp and the dehumidifyer status is written into a database.
 Using an UI, the user can observe how these values change over time.
 ![Rendering of the physical hardware](./pics/case_rendering.PNG "Hardware rendering.")
+
 ![Installed hardware.](./pics/ttttt.jpg "Installed hardware.")
 
 
@@ -31,7 +32,9 @@ Make sure the database and server are setup correctly. Adjust the server IP and 
 Here are some directories that may contain interesting files. All of these contain a separate, more detailed readme:
 * /3d_objects/: The printable case as STLs.
 * /esp_code/: The ESP8266 code measuring values and controlling the dehumidifier.
-* /tcpSocket/: The Python socket server, that handles incoming data from the ESP. Writes into a database. 
+* /tcpSocket/:
+* - Python socket server, that handles incoming data from the ESP. Writes into a database.
+* - Python socket server, that handles incoming requests from Frontend, executes a query in the database, formats the result and sends this back to frontend.
 * /ui/: The user interface.
 * /wiring/: A basic wiring diagram.
 * /pics/: Some images.
