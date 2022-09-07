@@ -23,7 +23,7 @@ Using an UI, the user can observe how these values change over time.
 
 
 ## Usage
-Enter your networks SSID and password in 'configuration.h'.
+In the ESP code, you have to setup the WiFi connection and the target TCP socket for the database. Follow the instructions in /esp_code/src/README.md.
 Make sure the database and server are setup correctly. Adjust the server IP and port in 'configuration.h'.
 
 
@@ -32,15 +32,24 @@ Here are some directories that may contain interesting files. All of these conta
 * /3d_objects/: The printable case as STLs.
 * /esp_code/: The ESP8266 code measuring values and controlling the dehumidifier.
 * /tcpSocket/: The Python socket server, that handles incoming data from the ESP. Writes into a database. 
-* /ui/: The userinter interface.
+* /ui/: The user interface.
 * /wiring/: A basic wiring diagram.
+* /pics/: Some images.
 
 
 ## Implementation
 ### Hardware
+We used a ESP8266 NodeMCU board as our microcontroller. An AZ-Delivery relay board is used to turn the dehumidifier on and off. We switch both the neutral and the phase wire. We use a DHT11 humidity and temperature sensor due to its low price and its easy availability. If you want a more accurate reading, you could switch to a DHT22, but this would require a 3D model redesign.  
 
 ### Mounting
+Please refer to the picture below for installing the components and wiring. You need a few short M3 screws and some cables.  
+Mount the ESP using M3 screws. The ESP will be powered or programmed using its USB port.  
+To hold the relay board in place, you have to install the board and then melt the mounting pins of the case. Connect the power and GND wires to the ESP. Connect the two signal wires to D2 and D3 of the ESP. One relay is for the phase, the other for neutral. Please be careful work when working with mains voltage.  
+![Installed hardware.](./pics/hum_control_open.jpg "Installed hardware.")
 
 ### Programming language and environment
+TODO Web stuff  
+TODO database  
+The code for the ESP8266 was mostly written using C++ and the Arduino libraries. This greatly simplified the implementation.  
 
 ### Testing

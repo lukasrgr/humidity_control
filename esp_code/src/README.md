@@ -39,10 +39,3 @@ Here are some important files. To keep it brief, only the headers are listed:
 
 
 ## Implementation
-### Hardware
-
-### Mounting
-
-### Programming language and environment
-
-### Testing

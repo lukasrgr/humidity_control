@@ -3,7 +3,7 @@
  */
 // Configure your ssid and password here
 #define YOUR_SSID "It hurts when IP"
-#define YOUR_PASSWORD "SagIchDirNicht!"
+#define YOUR_PASSWORD "SagIchDirDochNicht!"
 
 // Where should the ESP send its data? Mind the commas.
 #define SERVER_IP 192,168,178,107

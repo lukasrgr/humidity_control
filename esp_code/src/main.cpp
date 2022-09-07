@@ -26,7 +26,7 @@ const char pass[] = YOUR_PASSWORD;
 
 /***************************** Struct definitions *****************************/
 /**************************** Prototype functions *****************************/
-bool check_and_activate_relay(float hum, float temp);
+bool check_and_activate_relay(float hum, float temp, uint32_t timestamp);
 dht_data_t measure_until_data();
 void wait_until_round_time();
 void error_handler();
@@ -82,7 +82,7 @@ void setup() {
 
   printf("hum %f temp %f\n\r", dht.readHumidity(), dht.readTemperature());
 
-  printf("Trying to connect to %s", ssid);
+  printf("Trying to connect to %s\n\r", ssid);
   WiFi.begin(ssid, pass);
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
@@ -96,6 +96,7 @@ void setup() {
 
   setup_user_comm();
 
+  // TODO Uncomment this.
   wait_until_round_time();
 }
 
@@ -106,14 +107,16 @@ void loop() {
 
   time_t rawtime;
   time(&rawtime);
+
+  dht_data_t new_dat = measure_until_data();
+  new_dat.timestamp = (uint32_t)rawtime;
+
+  new_dat.relay_active = check_and_activate_relay(new_dat.humidity, 
+                                                  new_dat.temp,
+                                                  new_dat.timestamp);
   
   if (rawtime >= next_data_time)
   {
-    dht_data_t new_dat = measure_until_data();
-    new_dat.timestamp = (uint32_t)rawtime;
-
-    new_dat.relay_active = check_and_activate_relay(new_dat.humidity, 
-                                                    new_dat.temp);
 
 #ifdef PRINTS_IN_MAIN
     printf("Aquired new hum %u, temp %u\n\r", new_dat.humidity, new_dat.temp);
@@ -165,15 +168,28 @@ dht_data_t measure_until_data()
  * @param temp: The current temperature.
  * @return: Relay status.
  */
-bool check_and_activate_relay(float hum, __attribute__((unused)) float temp)
+bool check_and_activate_relay(float hum, __attribute__((unused)) float temp,
+                              uint32_t timestamp)
 {
+  static bool relay_active = false;
+
   if (hum >= ON_HUM_THRES)
   {
-    activate_first_n_relays(RELAY_NUM);
+    if (!relay_active)
+    {
+      activate_first_n_relays(RELAY_NUM);
+      send_relay_set(timestamp);
+      relay_active = true;
+    }
   } 
   else if (hum <= OFF_HUM_THRES)
   {
-    deactivate_n_relays(RELAY_NUM);
+    if (relay_active)
+    {
+      deactivate_n_relays(RELAY_NUM);
+      send_relay_reset(timestamp);
+      relay_active = false;
+    }
   }
   return get_relay_status(RELAY_NUM);
 }
