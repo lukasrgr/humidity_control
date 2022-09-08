@@ -57,6 +57,9 @@ To hold the relay board in place, you have to install the board and then melt th
 
 ### Programming language and environment
 
+Backend, Frontend and Database is running on
+| Raspberry Pi 4 Model B 8 GB RAM |
+
 | Component | Programming Language | Framework | In Detail 
 | --- | ----------- | --------- | ------- |
 | Database | MySQL | |MariaDB
