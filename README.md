@@ -17,6 +17,7 @@ Using an UI, the user can observe how these values change over time.
 * 3D printable housing
 ### Possible future work
 * Changing the dehumidifier activation threshold using the UI
+* Add Script for Setup
 ### Intentional limitations
 * No secure communication
 
