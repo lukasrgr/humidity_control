@@ -61,7 +61,7 @@ To hold the relay board in place, you have to install the board and then melt th
 | --- | ----------- | --------- | ------- |
 | Database | MySQL | |MariaDB
 | Backend | Python
-| Frontend | Typescript | Angular & Ionic
+| Frontend | Typescript & HTML | Angular & Ionic
 | Hardware | C, C++ | Arduino |Esp8266
 
 TODO Web stuff  
