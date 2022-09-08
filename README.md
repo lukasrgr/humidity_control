@@ -1,5 +1,5 @@
 # humidity_control
-<img width="100" height="100" style="float: right;" src="./pics/logo.png">
+<img width="100" height="100" align="right" src="./pics/logo.png">
 ## Basics
 This project aims at regulating our bathrooms humidity by controlling a dehumidifier. 
 The humidity, temperature, current timestamp and the dehumidifier status is written into a database.
