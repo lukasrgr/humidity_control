@@ -51,14 +51,39 @@ def insertIntoTable(timestamp, temperature = 0, humidity = 0, relay = 0, tablena
         connection.commit()
         print(f"{BGreen} -> Record inserted", tablename)
 
-
-def retrieveData(tablename):
-    print(f"{BYellow} -> reading table", tablename)
-    sql = f"""SELECT timestamp, humidity, temperature, relay FROM {tablename}"""
+def retrieveLastData(tablename, columns):
+    sql_columns = ','.join(columns)
+    sql = f"""SELECT {sql_columns} FROM {tablename} ORDER BY timestamp DESC LIMIT 1"""
+    print(sql)
     cursor.execute(sql)
     myresult = cursor.fetchall()
     return myresult
 
+def retrieveData(tablename, columns):
+    print(f"{BYellow} -> reading table", tablename)
+    sql_columns = ','.join(columns)
+        
+    sql = f"""SELECT {sql_columns} FROM {tablename}"""
+    cursor.execute(sql)
+    myresult = cursor.fetchall()
+    return myresult
+
+# TODO: create generic Converter
+def convertLatestDataIntoObjectStructure(data):
+    data_set = {"timestamp": [],"relay": []}
+    for i in data:
+        data_set['timestamp'].append(i[0])
+        data_set['relay'].append(i[1])
+    print(f"{BGreen} -> finished converting data parsing")
+    return json.dumps(data_set)
+
+def convertCurrentTemperatureIntoObjectStructure(data):
+    data_set = {"timestamp": [],"temperature": []}
+    for i in data:
+        data_set['timestamp'].append(i[0])
+        data_set['temperature'].append(i[1])
+    print(f"{BGreen} -> finished converting data parsing")
+    return json.dumps(data_set)
 
 def convertReceivedDataIntoObjectStructure(data):
     data_set = {"timestamp": [], "humidity": [],"temperature": [],"relay": []}
@@ -89,10 +114,14 @@ def waitingfordata():
                         some = json.loads(data.decode("utf-8"))
                         if some['method'] == 'receiveData':
                             try:
-                                retrievedData = retrieveData("sampleData")
-                                object = convertReceivedDataIntoObjectStructure(retrievedData)
-                                #s.send(object.encode())
-                                print(f"object ", object)
+                                if "additionalParam" in some:
+                                    if some['additionalParam'] == "getLatestData":
+                                        retrievedData = retrieveLastData("sampleData", ["timestamp","humidity", "temperature", "relay"])
+                                        object = convertReceivedDataIntoObjectStructure(retrievedData)
+
+                                else:
+                                    retrievedData = retrieveData("sampleData",["timestamp","humidity","temperature","relay"])
+                                    object = convertReceivedDataIntoObjectStructure(retrievedData)
                             except:
                                 print(error)
                             finally: 
@@ -123,4 +152,4 @@ try:
         waitingfordata()
         time.sleep(10)
 except mysql.connector.Error as error:
-    print(f"{BRed}", "Some Error ", error)
+    print(f"{BRed}", "Error ", error)
