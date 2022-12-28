@@ -1,15 +1,18 @@
 import { ConsumptionCalculationTile } from './consumptionCalculation/consumptionCalculation';
 import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from "@angular/core";
 import { DataOverviewTile } from "./dataOverview/dataOverview";
+import { DataOverviewModule } from './dataOverview/data.module';
 
 @NgModule({
+    imports: [
+        DataOverviewModule
+    ],
     declarations: [
-        DataOverviewTile,
         ConsumptionCalculationTile
     ],
     exports: [
-        DataOverviewTile,
-        ConsumptionCalculationTile
+        ConsumptionCalculationTile,
+        DataOverviewModule
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })

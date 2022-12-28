@@ -9,8 +9,7 @@ export abstract class AbstractData {
     ) { }
 
     ngOnInit(): void {
-        this.service.connectToWebsocket("receiveData").then((chartData) => {
-            console.log("chartData", chartData)
+        this.service.connectToWebsocket({ method: "receiveData" }).then((chartData) => {
             this.chartData = chartData as ReceiveDataResponse;
         }).finally(() => {
             this.createChart(this.chartData)
