@@ -1,12 +1,13 @@
 import asyncio
 import json
 import socket
+from colors import *
 
 import websockets
 
 def getData(jsonObject):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.connect(("192.168.178.29", 65435))
+        s.connect(("192.168.178.107", 65435))
         jsonObject = json.dumps(jsonObject)
         s.sendall(bytes(jsonObject,encoding="utf-8"))
         data = s.recv(1024)
@@ -23,8 +24,10 @@ async def handler(websocket):
             break
 
         jsonObject = json.loads(message)
-        if jsonObject['method'] == 'receiveData':
+        if jsonObject:
+            print(f"{Yellow}", "Fetching Data", jsonObject)
             response = getData(jsonObject)
+            print(f"{Green}", "Fetching Successfull")
             await websocket.send(response.decode("utf-8"))
 
 def sendResponse(response):

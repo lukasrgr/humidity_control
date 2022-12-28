@@ -54,16 +54,14 @@ def insertIntoTable(timestamp, temperature = 0, humidity = 0, relay = 0, tablena
 def retrieveLastData(tablename, columns):
     sql_columns = ','.join(columns)
     sql = f"""SELECT {sql_columns} FROM {tablename} ORDER BY timestamp DESC LIMIT 1"""
-    print(sql)
     cursor.execute(sql)
     myresult = cursor.fetchall()
     return myresult
 
-def retrieveData(tablename, columns):
+def retrieveData(tablename,fromDate, toDate, columns):
     print(f"{BYellow} -> reading table", tablename)
     sql_columns = ','.join(columns)
-        
-    sql = f"""SELECT {sql_columns} FROM {tablename}"""
+    sql = f"""SELECT {sql_columns} FROM {tablename} WHERE timestamp >= '{fromDate}' AND timestamp <= '{toDate}'"""
     cursor.execute(sql)
     myresult = cursor.fetchall()
     return myresult
@@ -111,35 +109,36 @@ def waitingfordata():
                     data = conn.recv(1024)
                     if data != b'':
                         print(f"data", data)
-                        some = json.loads(data.decode("utf-8"))
-                        if some['method'] == 'receiveData':
+                        request = json.loads(data.decode("utf-8"))
+                        if request['method'] == 'getLatestData':
                             try:
-                                if "additionalParam" in some:
-                                    if some['additionalParam'] == "getLatestData":
-                                        retrievedData = retrieveLastData("sampleData", ["timestamp","humidity", "temperature", "relay"])
-                                        object = convertReceivedDataIntoObjectStructure(retrievedData)
-
-                                else:
-                                    retrievedData = retrieveData("sampleData",["timestamp","humidity","temperature","relay"])
-                                    object = convertReceivedDataIntoObjectStructure(retrievedData)
+                                retrievedData = retrieveLastData("sampleData", ["timestamp","humidity", "temperature", "relay"])
+                                object = convertReceivedDataIntoObjectStructure(retrievedData)
                             except:
                                 print(error)
-                            finally: 
+                            finally:
                                 conn.sendall(object.encode())
                                 dataReceived = True
-                        elif some['method'] == 'sendGeneralData':
+                        elif request['method'] == 'queryHistoricData':
                             try:
-                                insertIntoTable(some['timestamp'], some['temperature'], some['humidity'], some['relay'],
-                                                "sampleData")
+                                if request['params']:
+                                    retrievedData = retrieveData("sampleData",request['params']["fromDate"],request['params']["toDate"],["timestamp","humidity","temperature","relay"])
+                                    object = convertReceivedDataIntoObjectStructure(retrievedData)
+                            finally:
+                                conn.sendall(object.encode())
+                                dataReceived = True
+                        elif request['method'] == 'sendGeneralData':
+                            try:
+                                insertIntoTable(request['timestamp'], request['temperature'], request['humidity'], request['relay'],"sampleData")
                             except:
                                 print(error)
                             finally:
                                 s.close()
                                 conn.close()
                                 dataReceived = True
-                        elif some['method'] == 'sendRelayData':
+                        elif request['method'] == 'sendRelayData':
                             try:
-                                insertIntoTable(some['timestamp'], 0,0,some['relay'], "relayData") 
+                                insertIntoTable(request['timestamp'], 0,0,request['relay'], "relayData")
                             except:
                                 print(error)
                             finally:
