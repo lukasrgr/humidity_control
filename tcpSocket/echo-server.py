@@ -51,14 +51,37 @@ def insertIntoTable(timestamp, temperature = 0, humidity = 0, relay = 0, tablena
         connection.commit()
         print(f"{BGreen} -> Record inserted", tablename)
 
-
-def retrieveData(tablename):
-    print(f"{BYellow} -> reading table", tablename)
-    sql = f"""SELECT timestamp, humidity, temperature, relay FROM {tablename}"""
+def retrieveLastData(tablename, columns):
+    sql_columns = ','.join(columns)
+    sql = f"""SELECT {sql_columns} FROM {tablename} ORDER BY timestamp DESC LIMIT 1"""
     cursor.execute(sql)
     myresult = cursor.fetchall()
     return myresult
 
+def retrieveData(tablename,fromDate, toDate, columns):
+    print(f"{BYellow} -> reading table", tablename)
+    sql_columns = ','.join(columns)
+    sql = f"""SELECT {sql_columns} FROM {tablename} WHERE timestamp >= '{fromDate}' AND timestamp <= '{toDate}'"""
+    cursor.execute(sql)
+    myresult = cursor.fetchall()
+    return myresult
+
+# TODO: create generic Converter
+def convertLatestDataIntoObjectStructure(data):
+    data_set = {"timestamp": [],"relay": []}
+    for i in data:
+        data_set['timestamp'].append(i[0])
+        data_set['relay'].append(i[1])
+    print(f"{BGreen} -> finished converting data parsing")
+    return json.dumps(data_set)
+
+def convertCurrentTemperatureIntoObjectStructure(data):
+    data_set = {"timestamp": [],"temperature": []}
+    for i in data:
+        data_set['timestamp'].append(i[0])
+        data_set['temperature'].append(i[1])
+    print(f"{BGreen} -> finished converting data parsing")
+    return json.dumps(data_set)
 
 def convertReceivedDataIntoObjectStructure(data):
     data_set = {"timestamp": [], "humidity": [],"temperature": [],"relay": []}
@@ -86,31 +109,36 @@ def waitingfordata():
                     data = conn.recv(1024)
                     if data != b'':
                         print(f"data", data)
-                        some = json.loads(data.decode("utf-8"))
-                        if some['method'] == 'receiveData':
+                        request = json.loads(data.decode("utf-8"))
+                        if request['method'] == 'getLatestData':
                             try:
-                                retrievedData = retrieveData("sampleData")
+                                retrievedData = retrieveLastData("sampleData", ["timestamp","humidity", "temperature", "relay"])
                                 object = convertReceivedDataIntoObjectStructure(retrievedData)
-                                #s.send(object.encode())
-                                print(f"object ", object)
                             except:
                                 print(error)
-                            finally: 
+                            finally:
                                 conn.sendall(object.encode())
                                 dataReceived = True
-                        elif some['method'] == 'sendGeneralData':
+                        elif request['method'] == 'queryHistoricData':
                             try:
-                                insertIntoTable(some['timestamp'], some['temperature'], some['humidity'], some['relay'],
-                                                "sampleData")
+                                if request['params']:
+                                    retrievedData = retrieveData("sampleData",request['params']["fromDate"],request['params']["toDate"],["timestamp","humidity","temperature","relay"])
+                                    object = convertReceivedDataIntoObjectStructure(retrievedData)
+                            finally:
+                                conn.sendall(object.encode())
+                                dataReceived = True
+                        elif request['method'] == 'sendGeneralData':
+                            try:
+                                insertIntoTable(request['timestamp'], request['temperature'], request['humidity'], request['relay'],"sampleData")
                             except:
                                 print(error)
                             finally:
                                 s.close()
                                 conn.close()
                                 dataReceived = True
-                        elif some['method'] == 'sendRelayData':
+                        elif request['method'] == 'sendRelayData':
                             try:
-                                insertIntoTable(some['timestamp'], 0,0,some['relay'], "relayData") 
+                                insertIntoTable(request['timestamp'], 0,0,request['relay'], "relayData")
                             except:
                                 print(error)
                             finally:
@@ -123,4 +151,4 @@ try:
         waitingfordata()
         time.sleep(10)
 except mysql.connector.Error as error:
-    print(f"{BRed}", "Some Error ", error)
+    print(f"{BRed}", "Error ", error)
