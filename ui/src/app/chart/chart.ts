@@ -10,14 +10,13 @@ import { ReceiveDataResponse, Service } from "src/shared/service";
 })
 export class ChartComponent extends AbstractData {
 
-    // ngOnInit(): void {
-    //     this.service.connectToWebsocket("receiveData").then((chartData) => {
-    //         console.log("chartData", chartData)
-    //         this.chartData = chartData as ReceiveDataResponse;
-    //     }).finally(() => {
-    //         this.createChart(this.chartData)
-    //     })
-    // }
+    override ngOnInit(): void {
+        this.service.connectToWebsocket({ method: "receiveData" }).then((chartData) => {
+            this.chartData = chartData as ReceiveDataResponse;
+        }).finally(() => {
+            this.createChart(this.chartData)
+        })
+    }
 
     createChart(chartData: ReceiveDataResponse) {
 
@@ -27,7 +26,7 @@ export class ChartComponent extends AbstractData {
         let timestamps: string[] = [];
 
         chartData.timestamp.forEach(element => {
-            timestamps.push(new Date(element * 1000).toLocaleString("default", { minute: "2-digit", hour: "2-digit" }));
+            timestamps.push(new Date(element).toLocaleString("default", { minute: "2-digit", hour: "2-digit" }));
         })
 
         let myChart = document.getElementById("myChart") as ChartItem;

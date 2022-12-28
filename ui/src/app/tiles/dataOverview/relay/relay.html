@@ -1,0 +1,18 @@
+<ion-card>
+    <ion-card-content>
+        <ion-row>
+            <ion-item lines="none" class="ion-text-center">
+                <!-- <ion-icon name="thermometer-outline" color="red" size="large" style="fill: red; width: 50%;"></ion-icon> -->
+                <ion-icon name="radio-button-on-outline" slot="start"
+                    [color]="relayState == RelayState.RELAY_OPEN ? 'success': 'danger'"></ion-icon>
+                <ion-text style="text-align: initial;" slot="end">Status {{relayState == RelayState.RELAY_OPEN ? 'an':
+                    'aus'}}<br />
+                    <small style="color: gray">
+                        Luftentfeuchter
+                    </small>
+                </ion-text>
+                <!-- <ion-note style="width: 50%; text-align: initial;">Test</ion-note> -->
+            </ion-item>
+        </ion-row>
+    </ion-card-content>
+</ion-card>
