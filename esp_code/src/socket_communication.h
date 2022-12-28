@@ -40,6 +40,22 @@ int dummy_client();
 int send_one_dht_data(dht_data_t *dat);
 
 /* 
+ * Send a relay set message to the database.
+ * 
+ * @param timestamp: The current time.
+ * @retval: Success status.
+ */
+int send_relay_set(uint32_t timestamp);
+
+/* 
+ * Send a relay reset message to the database.
+ * 
+ * @param timestamp: The current time.
+ * @retval: Success status.
+ */
+int send_relay_reset(uint32_t timestamp);
+
+/* 
  * Send data from the data_queue if available.
  * Needs to be called in a loop.
  * 

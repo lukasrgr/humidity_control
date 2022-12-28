@@ -3,6 +3,7 @@
 import socket
 import json
 import sys
+import time
 
 import mysql.connector
 import datetime
@@ -10,7 +11,7 @@ from tabulate import tabulate
 
 from colors import *
 
-HOST = "192.168.178.29"  # Standard loopback interface address (localhost)
+HOST = "192.168.178.107"  # Standard loopback interface address (localhost)
 PORT = 65435  # Port to listen on (non-privileged ports are > 1023)
 
 connection = mysql.connector.connect(host='192.168.178.107',
@@ -20,22 +21,35 @@ connection = mysql.connector.connect(host='192.168.178.107',
 cursor = connection.cursor()
 
 
-def insertIntoTable(timestamp, temperature, humidity, relay, tablename):
-    print(f"{BYellow} -> Trying to insert following data into table", tablename, "\n")
-    sql = f"""INSERT INTO {tablename}(timestamp, temperature, humidity, relay) 
+def insertIntoTable(timestamp, temperature = 0, humidity = 0, relay = 0, tablename = ""):
+
+    if tablename == 'sampleData':
+        sql = f"""INSERT INTO {tablename}(timestamp, temperature, humidity, relay) 
                              VALUES 
                              (%s,%s,%s,%s)"""
 
-    """ convert seconds into unix timestamp"""
-    value = datetime.datetime.fromtimestamp(timestamp)
-    data = [[value, temperature, humidity, relay]]
-    print(f"{Color_Off}", tabulate(data, headers=["timestamp", "temperature", "humidity", "relay"]), "\n")
+        """ convert seconds into unix timestamp"""
+        value = datetime.datetime.fromtimestamp(timestamp)
+        data = [[value, temperature, humidity, relay]]
+        print(f"{Color_Off}", tabulate(data, headers=["timestamp", "temperature", "humidity", "relay"]), "\n")
 
-    val = (value, temperature, humidity, relay)
+        val = (value, temperature, humidity, relay)
 
-    cursor.execute(sql, val)
-    connection.commit()
-    print(f"{BGreen} -> Record inserted successfully into", tablename)
+        cursor.execute(sql, val)
+        connection.commit()
+        print(f"{BGreen} -> Record inserted successfully into", tablename)
+    elif tablename == 'relayData':
+        sql = f"""INSERT INTO {tablename}(timestamp, relay)
+                                VALUES
+                                (%s,%s)"""
+        value = datetime.datetime.fromtimestamp(timestamp)
+        data = [[value, relay]]
+
+        val = (value, relay)
+
+        cursor.execute(sql, val)
+        connection.commit()
+        print(f"{BGreen} -> Record inserted", tablename)
 
 
 def retrieveData(tablename):
@@ -61,17 +75,18 @@ def waitingfordata():
     print("Searching for Connections")
     while True:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             s.bind((HOST, PORT))
             s.listen()
             conn, addr = s.accept()
             with conn:
-                print(f"Connected by {addr} \n")
+                #print(f"Connected by {addr} \n")
                 dataReceived = False
                 while not dataReceived:
                     data = conn.recv(1024)
                     if data != b'':
+                        print(f"data", data)
                         some = json.loads(data.decode("utf-8"))
-                        print(f"test", some)
                         if some['method'] == 'receiveData':
                             try:
                                 retrievedData = retrieveData("sampleData")
@@ -80,10 +95,10 @@ def waitingfordata():
                                 print(f"object ", object)
                             except:
                                 print(error)
-                            finally:
+                            finally: 
                                 conn.sendall(object.encode())
                                 dataReceived = True
-                        elif some['method'] == 'sendData':
+                        elif some['method'] == 'sendGeneralData':
                             try:
                                 insertIntoTable(some['timestamp'], some['temperature'], some['humidity'], some['relay'],
                                                 "sampleData")
@@ -91,18 +106,21 @@ def waitingfordata():
                                 print(error)
                             finally:
                                 s.close()
-                            dataReceived = True
-
+                                conn.close()
+                                dataReceived = True
+                        elif some['method'] == 'sendRelayData':
+                            try:
+                                insertIntoTable(some['timestamp'], 0,0,some['relay'], "relayData") 
+                            except:
+                                print(error)
+                            finally:
+                                s.close()
+                                conn.close()
+                                dataReceived = True
 
 try:
     while True:
         waitingfordata()
+        time.sleep(10)
 except mysql.connector.Error as error:
     print(f"{BRed}", "Some Error ", error)
-
-finally:
-    """if connection.is_connected():
-        connection.close()
-        print(f"{BRed}","MySQL connection is closed")"""
-
-"""Unused by now"""

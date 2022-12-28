@@ -11,12 +11,19 @@
 
 
 /********************************* Constants *********************************/
-#define NUM_RELAYS 1
+#define NUM_RELAYS 2
 
 
 /***************************** Struct definitions *****************************/
 /**************************** Variable definitions ****************************/
 /**************************** Prototype functions *****************************/
+/* 
+ * Setup outputs. Turn off the relays.
+ * 
+ * @return: None.
+ */
+void setup_relays();
+
 /* 
  * Turn on a single relay.
  * 
@@ -56,5 +63,13 @@ int activate_n_relays(uint8_t rel_n);
  * @return: Success status.
  */
 int deactivate_n_relays(uint8_t rel_n);
+
+/* 
+ * Activate the first n relays, deactivate the rest.
+ * 
+ * @param rel_num:  The number of relays to activate.
+ * @return: Success status.
+ */
+int activate_first_n_relays(uint8_t rel_num);
 
 #endif // _RELAY_ACTIVATION_H_

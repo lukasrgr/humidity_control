@@ -1,10 +1,17 @@
 /* 
  * Configure project build and settings.
  */
+// Configure your ssid and password here
+#define YOUR_SSID "YourSSID"
+#define YOUR_PASSWORD "********"
+
+// Where should the ESP send its data? Mind the commas.
+#define SERVER_IP 192,168,178,107
+#define SERVER_PORT 65435
 
 // Humidity thresholds
-#define ON_HUM_THRES 45
-#define OFF_HUM_THRES 40
+#define ON_HUM_THRES 70
+#define OFF_HUM_THRES 65
 
 // Sampling interval
 #define SAMPLE_EVERY_MIN 5

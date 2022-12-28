@@ -13,20 +13,20 @@
 
 
 /********************************** Defines ***********************************/
-#define DHT_PIN D2
+#define DHT_PIN D4
 #define DHT_TYPE DHT11
-#define RELAY_NUM 1
+#define RELAY_NUM 2
 
 
 /********************************* Constants **********************************/ 
 // Configure your ssid and password here
-const char ssid[] = "It hurts when IP";
-const char pass[] = "SagIchDirNicht!";
+const char ssid[] = YOUR_SSID;
+const char pass[] = YOUR_PASSWORD;
 
 
 /***************************** Struct definitions *****************************/
 /**************************** Prototype functions *****************************/
-bool check_and_activate_relay(float hum, float temp);
+bool check_and_activate_relay(float hum, float temp, uint32_t timestamp);
 dht_data_t measure_until_data();
 void wait_until_round_time();
 void error_handler();
@@ -59,6 +59,8 @@ void setup() {
 
   printf("\n\rHello\n\r");
 
+  setup_relays();
+
   /* 
    * Check for possible errors.
    */
@@ -80,7 +82,7 @@ void setup() {
 
   printf("hum %f temp %f\n\r", dht.readHumidity(), dht.readTemperature());
 
-  printf("Trying to connect to %s", ssid);
+  printf("Trying to connect to %s\n\r", ssid);
   WiFi.begin(ssid, pass);
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
@@ -92,46 +94,29 @@ void setup() {
   Serial.println(WiFi.localIP());
   printf("\n\r");
 
-  /*Serial.print("Connecting to SQL...  ");
-  
-  char default_db[] = "humidity";
-  if (conn.connect(server_addr, 3306, user, password))
-    Serial.println("OK.");
-  else
-    Serial.println("FAILED.");
-  */
-  // create MySQL cursor object
-  //cursor = new MySQL_Cursor(&conn);
-
-  /*
-  if (conn.connected())
-  {
-    printf("Connected and executing sql\n\r");
-    //cursor->execute(INSERT_SQL);
-  }
-  */
-
   setup_user_comm();
-  //dummy_client();
 
+  // TODO Uncomment this.
   wait_until_round_time();
 }
 
 void loop() {
   const uint32_t DATA_TIME_OFFSET_UNIX = SAMPLE_EVERY_MIN * 60;
 
-  static time_t last_data_time = 0;
+  static time_t next_data_time = 0;
 
   time_t rawtime;
   time(&rawtime);
-  
-  if (rawtime - DATA_TIME_OFFSET_UNIX > last_data_time)
-  {
-    dht_data_t new_dat = measure_until_data();
-    new_dat.timestamp = (uint32_t)rawtime;
 
-    new_dat.relay_active = check_and_activate_relay(new_dat.humidity, 
-                                                    new_dat.temp);
+  dht_data_t new_dat = measure_until_data();
+  new_dat.timestamp = (uint32_t)rawtime;
+
+  new_dat.relay_active = check_and_activate_relay(new_dat.humidity, 
+                                                  new_dat.temp,
+                                                  new_dat.timestamp);
+  
+  if (rawtime >= next_data_time)
+  {
 
 #ifdef PRINTS_IN_MAIN
     printf("Aquired new hum %u, temp %u\n\r", new_dat.humidity, new_dat.temp);
@@ -140,7 +125,9 @@ void loop() {
 
     push_data_element(new_dat);
 
-    last_data_time = rawtime;
+    // Round to next value
+    next_data_time = DATA_TIME_OFFSET_UNIX * 
+        ((rawtime + DATA_TIME_OFFSET_UNIX) / DATA_TIME_OFFSET_UNIX);
   }
 
   send_dht_data_from_queue();
@@ -181,15 +168,28 @@ dht_data_t measure_until_data()
  * @param temp: The current temperature.
  * @return: Relay status.
  */
-bool check_and_activate_relay(float hum, __attribute__((unused)) float temp)
+bool check_and_activate_relay(float hum, __attribute__((unused)) float temp,
+                              uint32_t timestamp)
 {
+  static bool relay_active = false;
+
   if (hum >= ON_HUM_THRES)
   {
-    activate_relay(RELAY_NUM);
+    if (!relay_active)
+    {
+      activate_first_n_relays(RELAY_NUM);
+      send_relay_set(timestamp);
+      relay_active = true;
+    }
   } 
   else if (hum <= OFF_HUM_THRES)
   {
-    deactivate_relay(RELAY_NUM);
+    if (relay_active)
+    {
+      deactivate_n_relays(RELAY_NUM);
+      send_relay_reset(timestamp);
+      relay_active = false;
+    }
   }
   return get_relay_status(RELAY_NUM);
 }
@@ -204,7 +204,7 @@ void wait_until_round_time()
   time_t rawtime;
   time(&rawtime);
 
-  while(rawtime % (5*60) != 0)
+  while(rawtime % ((SAMPLE_EVERY_MIN)*60) != 0)
   {
     time(&rawtime);
     yield();
@@ -219,7 +219,7 @@ void wait_until_round_time()
 void error_handler()
 {
   printf("Error detected, halting.\n\r");
-  deactivate_relay(1);
+  deactivate_n_relays(RELAY_NUM);
   for(;;)
     yield();
 }
