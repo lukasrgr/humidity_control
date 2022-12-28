@@ -14,7 +14,7 @@ export class RelayComponent {
     ) { }
     ngOnInit() {
         this.service.latestData.subscribe(data => {
-            this.relayState = data.relay == 0 ? RelayState.RELAY_CLOSED : RelayState.RELAY_OPEN
+            this.relayState = data.relay;
         })
     }
 }

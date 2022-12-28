@@ -1,5 +1,7 @@
+import { QueryHistoricDataRequest } from './../../shared/request/QueryHistoricData';
 import { Component } from "@angular/core";
 import { Chart, LineController, LineElement, PointElement, LinearScale, Title, ChartItem, ChartType, ChartDataset, ChartOptions } from "chart.js"
+import { differenceInMinutes, endOfDay, startOfDay } from 'date-fns';
 import { AbstractData } from "src/shared/abstractData";
 import { ReceiveDataResponse, Service } from "src/shared/service";
 
@@ -9,20 +11,24 @@ import { ReceiveDataResponse, Service } from "src/shared/service";
     templateUrl: './chart.html'
 })
 export class ChartComponent extends AbstractData {
+    private fromDate: Date;
+    private toDate: Date;
 
     override ngOnInit(): void {
-        this.service.connectToWebsocket({ method: "receiveData" }).then((chartData) => {
+        this.toDate = endOfDay(new Date())
+        this.fromDate = startOfDay(new Date());
+        this.service.connectToWebsocket(new QueryHistoricDataRequest(this.fromDate, this.toDate)).then((chartData) => {
             this.chartData = chartData as ReceiveDataResponse;
-        }).finally(() => {
+        }).then(() => {
             this.createChart(this.chartData)
         })
     }
 
     createChart(chartData: ReceiveDataResponse) {
 
-        let humidity = { name: "Feuchtigkeit", data: chartData.humidity, color: 'rgb(0,0,255)' };
-        let temperature = { name: "Temperatur", data: chartData.temperature, color: 'rgb(255,0,0)' };
-        let relay = { name: "Relay", data: chartData.relay, color: 'rgb(0,255,0)' };
+        let humidity = { name: "Feuchtigkeit", data: chartData.humidity, color: 'rgb(65,105,225)' };
+        let temperature = { name: "Temperatur", data: chartData.temperature, color: 'rgb(178,34,34)' };
+        let relay = { name: "Relay", data: chartData.relay, color: 'rgb(192,192,192)' };
         let timestamps: string[] = [];
 
         chartData.timestamp.forEach(element => {
@@ -40,6 +46,9 @@ export class ChartComponent extends AbstractData {
                 plugins: {
                     title: {
                         display: true,
+                    },
+                    legend: {
+                        position: 'bottom'
                     }
                 },
                 scales: {
@@ -48,9 +57,22 @@ export class ChartComponent extends AbstractData {
                         type: 'linear',
                         min: 0,
                         max: 100
-                    }
+                    },
+                    y1: {
+                        type: 'linear',
+                        offset: true,
+                        min: 0,
+                        max: 1,
+                        // display: true,
+                        position: 'right',
+                        grid: {
+                            drawOnChartArea: false, // only want the grid lines for one axis to show up
+                        },
+                        // grid line settings
+
+                    },
                 },
-                responsive: true
+                responsive: true,
             },
         })
         for (let dataset of [humidity, temperature, relay]) {
@@ -59,6 +81,8 @@ export class ChartComponent extends AbstractData {
                 backgroundColor: dataset.color,
                 borderColor: dataset.color,
                 data: dataset.data,
+                yAxisID: dataset.name == 'Relay' ? 'y1' : 'y',
+                tension: 0.4
             })
         }
     }

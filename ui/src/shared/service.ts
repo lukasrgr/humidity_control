@@ -1,6 +1,8 @@
 import { NumberSymbol } from "@angular/common";
 import { ErrorHandler, Injectable } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
+import { JsonRpcRequest } from "./request/jsonrpc";
+import { GetLatestDataRequest } from "./request/GetLatestData";
 
 @Injectable()
 export class Service implements ErrorHandler {
@@ -13,7 +15,7 @@ export class Service implements ErrorHandler {
     }
 
     constructor() {
-        this.connectToWebsocket({ method: "receiveData", additionalParam: "getLatestData" })
+        this.connectToWebsocket(new GetLatestDataRequest())
             .then(data => {
                 let response = (data as ReceiveDataResponse)
                 this.latestData.next({
@@ -24,7 +26,7 @@ export class Service implements ErrorHandler {
                 })
             })
         setInterval(() => {
-            this.connectToWebsocket({ method: "receiveData", additionalParam: "getLatestData" })
+            this.connectToWebsocket(new GetLatestDataRequest())
                 .then(data => {
                     let response = (data as ReceiveDataResponse)
                     this.latestData.next({
@@ -37,12 +39,12 @@ export class Service implements ErrorHandler {
         }, 300000)
     }
 
-    public connectToWebsocket(request: { method: string, additionalParam?: string }) {
+    public connectToWebsocket(request: JsonRpcRequest) {
         return new Promise((resolve, reject) => {
             if ("WebSocket" in window) {
                 var ws = new WebSocket("ws://192.168.178.107:8001/");
                 ws.onopen = function () {
-                    console.log("Opening a connection...");
+                    console.log("Opening a connection...", request);
                     ws.send(JSON.stringify(request))
                 };
                 ws.onmessage = function (event) {
