@@ -21,6 +21,7 @@
     "@ionic/angular": "latest",
     "@types/chart.js": "^2.9.37",
     "chart.js": "^3.7.1",
+    "date-fns": "^2.29.3",
     "ng2-charts": "^3.0.11",
     "rxjs": "~7.5.0",
     "tslib": "^2.3.0",
