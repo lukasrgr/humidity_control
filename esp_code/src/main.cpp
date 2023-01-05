@@ -191,7 +191,7 @@ bool check_and_activate_relay(float hum, __attribute__((unused)) float temp,
       relay_active = false;
     }
   }
-  return get_relay_status(RELAY_NUM);
+  return get_relay_status(1);
 }
 
 /* 
