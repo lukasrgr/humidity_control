@@ -11,8 +11,10 @@ import { ReceiveDataResponse, Service } from "src/shared/service";
     templateUrl: './chart.html'
 })
 export class ChartComponent extends AbstractData {
-    private fromDate: Date;
+    public fromDate: Date;
     private toDate: Date;
+
+    public dataAccessible: boolean = false;
 
     override ngOnInit(): void {
         this.toDate = endOfDay(new Date())
@@ -43,23 +45,31 @@ export class ChartComponent extends AbstractData {
                 labels: timestamps,
             },
             options: {
+                elements: {
+                    point: {
+                        radius: 0
+                    }
+                },
                 plugins: {
-                    title: {
-                        display: true,
-                    },
                     legend: {
-                        position: 'bottom'
+                        position: 'bottom',
+
+                    },
+                    tooltip: {
+                        callbacks: {
+
+                        }
                     }
                 },
                 scales: {
                     y: {
                         offset: true,
-                        type: 'linear',
+                        // type: 'linear',
                         min: 0,
                         max: 100
                     },
                     y1: {
-                        type: 'linear',
+                        // type: 'linear',
                         offset: true,
                         min: 0,
                         max: 1,
@@ -73,6 +83,7 @@ export class ChartComponent extends AbstractData {
                     },
                 },
                 responsive: true,
+
             },
         })
         for (let dataset of [humidity, temperature, relay]) {
@@ -82,9 +93,13 @@ export class ChartComponent extends AbstractData {
                 borderColor: dataset.color,
                 data: dataset.data,
                 yAxisID: dataset.name == 'Relay' ? 'y1' : 'y',
-                tension: 0.4
+                tension: 0.4,
             })
         }
+
+        // Trigger resizing to show fetched Data
+        chart.resize(150, 600)
+        this.dataAccessible = true
     }
 
     public getChartHeight(): number {

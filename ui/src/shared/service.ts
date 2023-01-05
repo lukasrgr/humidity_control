@@ -48,6 +48,7 @@ export class Service implements ErrorHandler {
                     ws.send(JSON.stringify(request))
                 };
                 ws.onmessage = function (event) {
+                    console.log("🚀 ~ file: service.ts:52 ~ Service ~ returnnewPromise ~ event.data", event.data)
                     console.log("response", JSON.parse(event.data))
                     let chartData = JSON.parse(event.data)
                     resolve(chartData);

@@ -8,6 +8,7 @@ import { AppComponent } from './app.component';
 import { IonicModule } from '@ionic/angular';
 import { Chart } from './chart/chartModule';
 import { NgChartsModule } from 'ng2-charts';
+import { CommonModule } from '@angular/common';
 
 
 @NgModule({
@@ -15,15 +16,16 @@ import { NgChartsModule } from 'ng2-charts';
     AppComponent
   ],
   imports: [
+    CommonModule,
     Chart,
     Tiles,
     NgChartsModule,
     BrowserModule,
     AppRoutingModule,
-    IonicModule.forRoot()
+    IonicModule.forRoot(),
   ],
   providers: [
-    Service
+    Service,
   ],
   bootstrap: [AppComponent]
 })

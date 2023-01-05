@@ -14,7 +14,14 @@
     <canvas id="myChart"></canvas>
   </div> -->
 <ion-card>
+    <ion-item lines="none">
+        <!-- <ion-datetime presentation="date-time" [preferWheel]="true"></ion-datetime> -->
+        <!-- <ion-button disabled>
+            <ion-icon name="chevron-back-outline"></ion-icon>
+        </ion-button>-->
+        {{fromDate | date: 'EEEE, M/d'}}
+    </ion-item>
     <ion-card-content>
-        <canvas id="myChart" height="150" width="600"></canvas>
+        <canvas baseChart id="myChart" height="150" width="600"></canvas>
     </ion-card-content>
 </ion-card>
