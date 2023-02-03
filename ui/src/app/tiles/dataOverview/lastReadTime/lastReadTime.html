@@ -1,0 +1,14 @@
+<ion-card>
+    <ion-card-content *ngIf="true">
+        <ion-row>
+            <ion-item lines="none" class="ion-text-center">
+                <ion-icon name="time-outline" slot="start" color="primary"></ion-icon>
+                <ion-text style="text-align: initial;" slot="end">{{timestamp | date: 'dd.MM.yy HH:mm'}}<br />
+                    <small style="color: gray">
+                        Letzte Aktualisierung
+                    </small>
+                </ion-text>
+            </ion-item>
+        </ion-row>
+    </ion-card-content>
+</ion-card>

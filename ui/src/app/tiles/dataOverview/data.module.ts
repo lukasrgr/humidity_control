@@ -4,6 +4,7 @@ import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from "@angular/core";
 import { DataOverviewTile } from './dataOverview';
 import { TemperatureComponent } from './temperature/temperature';
 import { HumidityComponent } from './humidity/humidity';
+import { LastReadTimeComponent } from './lastReadTime/lastReadTime';
 
 @NgModule({
     imports: [
@@ -14,12 +15,14 @@ import { HumidityComponent } from './humidity/humidity';
         TemperatureComponent,
         HumidityComponent,
         DataOverviewTile,
+        LastReadTimeComponent
     ],
     exports: [
         DataOverviewTile,
         RelayComponent,
         HumidityComponent,
         TemperatureComponent,
+        LastReadTimeComponent
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })

@@ -7,6 +7,11 @@ html.ios {
     background-color: rgba(100,100,100, $alpha: 0.2);
 }
 
+// Overwrite default styling of mat-material because of ionic applied style
+mat-form-field  div.mat-form-field-infix {
+  display: flex;
+}
+
 :root {
   
     /** primary **/

@@ -1,12 +1,11 @@
 import { Component } from "@angular/core";
 import { Chart, LineController, LineElement, PointElement, LinearScale, Title, ChartItem, ChartType, ChartDataset, ChartOptions } from "chart.js";
-import { AbstractData } from "src/shared/abstractData";
 
 @Component({
     selector: "dataOverview",
     templateUrl: "./dataOverview.html"
 })
-export class DataOverviewTile extends AbstractData {
+export class DataOverviewTile {
     public data = {
         labels: [
             'Red',
@@ -46,12 +45,6 @@ export class DataOverviewTile extends AbstractData {
             options: {
                 cutout: "70%",
                 radius: "50%",
-                // datasets: {
-                //     doughnut: {
-                //      tot   
-                //     }
-                // },
-                // radius: "40%",
                 plugins: {
                     title: {
                         display: true,
@@ -61,9 +54,6 @@ export class DataOverviewTile extends AbstractData {
                 scales: {
 
                     y: {
-                        //         offset: true,
-                        //         type: 'linear',
-                        //         min: 0,
                         max: 100,
                         display: false
                     },

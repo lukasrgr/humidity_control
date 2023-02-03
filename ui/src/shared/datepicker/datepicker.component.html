@@ -1,0 +1,11 @@
+<div class="ion-padding">
+    <mat-form-field appearance="fill">
+        <mat-label>Enter a date range</mat-label>
+        <mat-date-range-input [rangePicker]="picker" [formGroup]="range" style="padding-top: 7%">
+            <input matStartDate placeholder="Start date" formControlName="start">
+            <input matEndDate placeholder="End date" formControlName="end">
+        </mat-date-range-input>
+        <mat-datepicker-toggle st matIconSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-date-range-picker #picker (closed)="emit()"></mat-date-range-picker>
+    </mat-form-field>
+</div>

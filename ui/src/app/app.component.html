@@ -1,16 +1,8 @@
 <ion-app>
-  <!-- <ion-header>
-    <ion-toolbar color="primary" mode="md">
-      <!-- page title is shown if the current page isn't Live nor History 
-      <ion-title slot="start">
-        Monitoring: Humidity and Temperature
-      </ion-title>
-    </ion-toolbar>
-  </ion-header> -->
-
-  <ion-grid style="width: 100%">
+  <ion-grid style="width: 100%; overflow: auto">
     <ion-row class="ion-no-padding">
       <ion-col size="12">
+
         <dataOverview></dataOverview>
       </ion-col>
       <ion-col style="justify-content: center;" size="12" size-sm="12" size-lg="10">
@@ -22,6 +14,7 @@
         <consumptionCalculation></consumptionCalculation>
       </ion-col>
     </ion-row>
+    <ion-row>
+    </ion-row>
   </ion-grid>
-
 </ion-app>

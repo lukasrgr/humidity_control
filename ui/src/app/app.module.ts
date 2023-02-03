@@ -1,14 +1,17 @@
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
 import { Service } from './../shared/service';
 import { Tiles } from './tiles/tiles.module';
-import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
 
+import { CommonModule } from '@angular/common';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { IonicModule } from '@ionic/angular';
+import { NgChartsModule } from 'ng2-charts';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { IonicModule } from '@ionic/angular';
 import { Chart } from './chart/chartModule';
-import { NgChartsModule } from 'ng2-charts';
-import { CommonModule } from '@angular/common';
+
+import { SharedModule } from 'src/shared/shared.module';
 
 
 @NgModule({
@@ -23,10 +26,15 @@ import { CommonModule } from '@angular/common';
     BrowserModule,
     AppRoutingModule,
     IonicModule.forRoot(),
+    BrowserAnimationsModule,
+    SharedModule,
   ],
   providers: [
     Service,
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  schemas: [
+    CUSTOM_ELEMENTS_SCHEMA
+  ],
 })
 export class AppModule { }
