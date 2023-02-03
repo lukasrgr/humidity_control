@@ -1,4 +1,6 @@
 ### How to manage Database for this project
+> 
+
 > most important commands:
     - create database ["name"];
     - create table ["name"] (column1 datatype,column2 datatype,column3 datatype, ...);
