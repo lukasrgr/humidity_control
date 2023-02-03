@@ -3,18 +3,19 @@ import { ErrorHandler, Injectable } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
 import { JsonRpcRequest } from "./request/jsonrpc";
 import { GetLatestDataRequest } from "./request/GetLatestData";
+import { endOfDay, startOfDay } from "date-fns";
 
 @Injectable()
-export class Service implements ErrorHandler {
+export class Service {
 
     public latestData: BehaviorSubject<{ humidity: number, temperature: number, timestamp: string, relay: number }> = new BehaviorSubject({
         humidity: 0, temperature: 0, timestamp: "", relay: 0
     });
-    handleError(error: any): void {
-        throw new Error("Method not implemented.");
-    }
+
+    public historyPeriod: { fromDate: Date, toDate: Date } = { fromDate: startOfDay(new Date()), toDate: endOfDay(new Date()) }
 
     constructor() {
+        const FIVE_MIN = 1000 * 60 * 5;
         this.connectToWebsocket(new GetLatestDataRequest())
             .then(data => {
                 let response = (data as ReceiveDataResponse)
@@ -25,6 +26,7 @@ export class Service implements ErrorHandler {
                     relay: response.relay[0]
                 })
             })
+        let msToNextRounded5Min = FIVE_MIN - (Date.now() % FIVE_MIN) + 10000
         setInterval(() => {
             this.connectToWebsocket(new GetLatestDataRequest())
                 .then(data => {
@@ -36,7 +38,7 @@ export class Service implements ErrorHandler {
                         relay: response.relay[0]
                     })
                 })
-        }, 300000)
+        }, msToNextRounded5Min, () => msToNextRounded5Min = FIVE_MIN - (Date.now() % FIVE_MIN) + 10000)
     }
 
     public connectToWebsocket(request: JsonRpcRequest) {
@@ -44,11 +46,10 @@ export class Service implements ErrorHandler {
             if ("WebSocket" in window) {
                 var ws = new WebSocket("ws://192.168.178.107:8001/");
                 ws.onopen = function () {
-                    console.log("Opening a connection...", request);
+                    console.log("request", request);
                     ws.send(JSON.stringify(request))
                 };
                 ws.onmessage = function (event) {
-                    console.log("how is data looking", event.data)
                     console.log("response", JSON.parse(event.data))
                     let chartData = JSON.parse(event.data)
                     resolve(chartData);
@@ -57,12 +58,6 @@ export class Service implements ErrorHandler {
         })
     }
 }
-
-export const EMPTY_DATASET = [{
-    label: "no Data available",
-    data: [],
-    hidden: false
-}];
 
 export type ReceiveDataResponse = {
     timestamp: string[],
