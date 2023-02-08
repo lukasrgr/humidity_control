@@ -1,15 +1,14 @@
 /********************************** Includes **********************************/
 #include <Arduino.h>
 #include <stdbool.h>
+#include <DHT_U.h>
+#include "ESP8266WiFi.h"
 #include "time.h" // setenv(), do not worry about IDE warning, compiles fine
 #include "configuration.h"
 #include "relay_activation.h"
 #include "types_and_enums.h"
 #include "data_queue.h"
 #include "socket_communication.h"
-#include "dht_lib/DHT.h"
-#include "mysql_connector_lib/src/MySQL_Connection.h"
-#include "mysql_connector_lib/src/MySQL_Cursor.h"
 
 
 /********************************** Defines ***********************************/
@@ -35,21 +34,8 @@ void error_handler();
 /**************************** Variable definitions ****************************/
 DHT dht(DHT_PIN, DHT_TYPE);
 
-// Configure the MySQL address
-IPAddress server_addr(192,168,178,107);
-char user[] = "arduino_user";
-char password[] = "secret";
-
-WiFiClient client;
-//MySQL_Connection conn(&client);
-//MySQL_Cursor* cursor;
-
-// TODO Replace by modifiable template
-//char INSERT_SQL[] = "INSERT INTO humidity.measuredData (timestamp, temperature, "
-//                    "humidity) VALUES (1, 2, 6)";
-
 uint32_t last_executed = 0;
-// bc:ff:4d:19:fe:11
+
 
 /**************************** Function definitions ***************************/
 void setup() {
@@ -96,7 +82,6 @@ void setup() {
 
   setup_user_comm();
 
-  // TODO Uncomment this.
   wait_until_round_time();
 }
 
@@ -108,9 +93,11 @@ void loop() {
   time_t rawtime;
   time(&rawtime);
 
+  // Get new data
   dht_data_t new_dat = measure_until_data();
   new_dat.timestamp = (uint32_t)rawtime;
 
+  // Activate relay if necessary
   new_dat.relay_active = check_and_activate_relay(new_dat.humidity, 
                                                   new_dat.temp,
                                                   new_dat.timestamp);
