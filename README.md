@@ -4,7 +4,6 @@ This project aims at regulating our bathrooms humidity by controlling a dehumidi
 The humidity, temperature, current timestamp and the dehumidifier status is written into a database.
 Using an UI, the user can observe how these values change over time.  
 ![Rendering of the physical hardware](./pics/case_rendering.PNG "Hardware rendering.")
-![Installed hardware.](./pics/ttttt.jpg "Installed hardware.")
 
 
 ## Features
@@ -66,9 +65,3 @@ Backend, Frontend and Database is running on
 | Backend | Python
 | Frontend | Typescript & HTML | Angular & Ionic
 | Hardware | C, C++ | Arduino |Esp8266
-
-TODO Web stuff  
-TODO database  
-The code for the ESP8266 was mostly written using C++ and the Arduino libraries. This greatly simplified the implementation.  
-
-### Testing
