@@ -8,9 +8,10 @@ This project aims at regulating our bathrooms humidity by controlling a dehumidi
 The humidity, temperature, current timestamp and the dehumidifier status is written into a database.
 Using an UI, the user can observe how these values change over time.
 
-<div style="display: flex; justify-content: center; margin-bottom: 2%">
-  <img src="./pics/case_rendering.png" width="400" align="center">
-</div>
+  <img src="./pics/case_rendering.png" width="400" style="display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 60%;">
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
@@ -83,14 +84,17 @@ Please refer to the picture below for installing the components and wiring. You 
 Mount the ESP using M3 screws. The ESP will be powered or programmed using its USB port.  
 To hold the relay board in place, you have to install the board and then melt the mounting pins of the case. Connect the power and GND wires to the ESP. Connect the two signal wires to D2 and D3 of the ESP. One relay is for the phase, the other for neutral. Fix the cables using the wire_lid. Please be careful work when working with mains voltage.
 
-<div style="display: flex; justify-content: center; margin-bottom: 2%">
-  <img src="pics/hum_control_open.jpg" width="400" align="center">
-</div>
+  <img src="pics/hum_control_open.jpg" width="400" style="display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 60%;">
+
 
 ### Sequencediagramm
 ##### This Chart visualizes the Communication between all components
 \
  ![Installed hardware.](./pics/sequence_diagram.png "Installed hardware.")
+
 
 ### Programming language and environment
 
