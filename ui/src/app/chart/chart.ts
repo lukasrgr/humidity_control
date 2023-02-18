@@ -21,7 +21,7 @@ export class ChartComponent {
 
     ngOnInit(): void {
         let myChart = document.getElementById(this.uniqueId) as ChartItem;
-        this.chart?.destroy()
+        // this.chart?.destroy()
         this.chart = new Chart(myChart, {
             data: {
                 datasets: [],
@@ -122,8 +122,11 @@ export class ChartComponent {
             }
         }
 
-        this.chart.data.labels = timestamps;
-        this.chart.data.datasets = datasets;
+        if (this.chart) {
+            this.chart.data.labels = timestamps;
+            this.chart.data.datasets = datasets;
+        }
+
 
         // Trigger resizing to show fetched Data
         this.chart?.update()
