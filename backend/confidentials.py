@@ -1,3 +1,8 @@
 class Confidentials:
-    HOST = "192.168.178.107"
-    PORT = 65435
+    HOST = ""
+    PORT = 0
+
+    # Needs to be defined for database connection
+    DATABASE_NAME = ""
+    DATABASE_USERNAME = ""
+    DATABASE_PW = ""

@@ -15,10 +15,10 @@ HOST = Confidentials.HOST  # Standard loopback interface address (localhost)
 PORT = Confidentials.PORT
 
 # Establishing Database Connection
-connection = mysql.connector.connect(host='192.168.178.107',
-                                     database='humidity',
-                                     user='test1',
-                                     password='test1')
+connection = mysql.connector.connect(host=HOST,
+                                     database=Confidentials.DATABASE_NAME,
+                                     user=Confidentials.DATABASE_USERNAME,
+                                     password=Confidentials.DATABASE_PW)
 cursor = connection.cursor()
 
 

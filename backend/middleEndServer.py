@@ -3,13 +3,16 @@ import json
 import socket
 from colors import *
 
+from confidentials import *
+
 import websockets
+
 
 def getData(jsonObject):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.connect(("192.168.178.107", 65435))
+        s.connect((Confidentials.HOST, Confidentials.PORT))
         jsonObject = json.dumps(jsonObject)
-        s.sendall(bytes(jsonObject,encoding="utf-8"))
+        s.sendall(bytes(jsonObject, encoding="utf-8"))
         data = s.recv(1024)
         s.close()
     return data
@@ -30,12 +33,12 @@ async def handler(websocket):
             print(f"{Green}", "Fetching Successfull")
             await websocket.send(response.decode("utf-8"))
 
+
 def sendResponse(response):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.connect(("localhost", 8001))
         jsonObject = json.dumps(response)
-        s.sendall(bytes(jsonObject,encoding="utf-8"))
-        #data = s.recv(1024)
+        s.sendall(bytes(jsonObject, encoding="utf-8"))
         s.close()
 
 
