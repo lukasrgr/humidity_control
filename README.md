@@ -9,7 +9,7 @@ The humidity, temperature, current timestamp and the dehumidifier status is writ
 Using an UI, the user can observe how these values change over time.
 
 <p align="center">
-  <img src="./pics/case_rendering.png" width="400">
+  <img src="./pics/case_rendering.PNG" width="400">
 </p>
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
