@@ -27,7 +27,6 @@ Using an UI, the user can observe how these values change over time.
     - [Mounting](#mounting)
     - [Establishing Communication](#sequencediagramm)
     - [Programming language and environment](#programming-language-and-environment)
-  - [Sequencediagramm](#sequencediagramm)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
