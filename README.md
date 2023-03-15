@@ -1,6 +1,6 @@
 <p align="center">
-<img src="./pics/humidity_control_logo.png" >
-<h1 style="color: #312783">
+<img src="./pics/humidity_control_logo.png"width="200px" >
+<h1 style="text-align: center">
 Humidity_Control
 </h1>
 </p>
