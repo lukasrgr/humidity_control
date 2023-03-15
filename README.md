@@ -1,4 +1,6 @@
-
+<p align="center">
+<img src="./pics/humidity_control_logo.png" >
+</p>
 <h1 align="center">
     Humidity_Control
 </h1>
