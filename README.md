@@ -1,4 +1,4 @@
-<p align="center">
+<p align="right">
 <img src="./pics/humidity_control_logo.png" >
 </p>
 <h1 align="center">
