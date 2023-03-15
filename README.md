@@ -1,9 +1,9 @@
-<p align="right">
+<p align="center">
 <img src="./pics/humidity_control_logo.png" >
-</p>
-<h1 align="center">
-    Humidity_Control
+<h1 style="color: #312783">
+Humidity_Control
 </h1>
+</p>
 
 ## Basics
 This project aims at regulating our bathrooms humidity by controlling a dehumidifier. 
