@@ -1,6 +1,9 @@
 <p align="center">
-<img src="./pics/humidity_control_logo.png"width="200px" >
-<h1 align="center">
+<a href="https://github.com/Johle00" target="_blank">
+<img src="./pics/humidity_control_logo.png"width="200px"   >
+</a>
+
+<h1 align="center" top="0%">
 Humidity_Control
 </h1>
 </p>
